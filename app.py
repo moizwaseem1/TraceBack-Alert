@@ -15,7 +15,6 @@ def static_from_root():
 # =====================================================================
 # INTELLIGENCE PROCESSING PIPELINE (Live Network Only)
 # =====================================================================
-
 def fetch_real_time_intelligence():
     """Aggregates real-time threat data strictly from verified live sources."""
     live_feed = []
@@ -25,45 +24,39 @@ def fetch_real_time_intelligence():
     cutoff_time = now_utc - timedelta(hours=24)
     
     # 1. OSINT Security & Terror Alerts
-                pakistan_locations = [
-                    # Federal & Major Hubs
-                    "Islamabad", "Rawalpindi", "Karachi", "Lahore", "Peshawar", "Quetta",
-                    
-                    # Sindh
-                    "Hyderabad", "Sukkur", "Larkana", "Nawabshah", "Mirpurkhas", "Badin", 
-                    "Jacobabad", "Shikarpur", "Thatta", "Dadu", "Khairpur", "Umerkot", 
-                    "Mithi", "Kashmore", "Ghotki", "Jamshoro", "Tando Adam", "Hala",
-                    
-                    # Punjab
-                    "Faisalabad", "Multan", "Gujranwala", "Sialkot", "Sargodha", 
-                    "Bahawalpur", "Gujrat", "Sheikhupura", "Jhang", "Sahiwal", "Okara", 
-                    "Rahim Yar Khan", "Kasur", "Muzaffargarh", "Vehari", "Chakwal", 
-                    "Attock", "Bhakkar", "Chiniot", "Hafizabad", "Jhelum", "Khanewal", 
-                    "Khushab", "Layyah", "Lodhran", "Mianwali", "Nankana Sahib", "Narowal", 
-                    "Pakpattan", "Rajanpur", "Toba Tek Singh", "Mandi Bahauddin", "Dera Ghazi Khan",
-                    
-                    # Khyber Pakhtunkhwa (KPK) & Former FATA
-                    "Mardan", "Mingora", "Swat", "Kohat", "Abbottabad", "Bannu", 
-                    "Swabi", "Dera Ismail Khan", "Charsadda", "Nowshera", "Mansehra", 
-                    "Karak", "Hangu", "Haripur", "Batagram", "Chitral", "Dir", "Kohistan", 
-                    "Shangla", "Buner", "Tank", "Miranshah", "Wana", "Parachinar", 
-                    "Khyber", "Bajaur", "Mohmand", "Orakzai", "Kurram", "South Waziristan", "North Waziristan",
-                    
-                    # Balochistan
-                    "Gwadar", "Khuzdar", "Chaman", "Turbat", "Sibi", "Zhob", 
-                    "Ormara", "Pasni", "Taftan", "Loralai", "Naseerabad", "Jafarabad", 
-                    "Dera Bugti", "Kohlu", "Awaran", "Panjgur", "Kharan", "Washuk", 
-                    "Mastung", "Kalat", "Lasbela", "Pishin", "Killa Abdullah", "Ziarat",
-                    
-                    # Gilgit-Baltistan & AJK
-                    "Gilgit", "Skardu", "Muzaffarabad", "Mirpur", "Rawalakot", 
-                    "Hunza", "Chilas", "Ghanche", "Kharmang", "Shigar", "Astore", 
-                    "Diamer", "Ghizer", "Kotli", "Bagh", "Sudhanoti", "Bhimber", "Neelum"
-                ]
+    pakistan_locations = [
+        # Federal & Major Hubs
+        "Islamabad", "Rawalpindi", "Karachi", "Lahore", "Peshawar", "Quetta",
+        # Sindh
+        "Hyderabad", "Sukkur", "Larkana", "Nawabshah", "Mirpurkhas", "Badin", 
+        "Jacobabad", "Shikarpur", "Thatta", "Dadu", "Khairpur", "Umerkot", 
+        "Mithi", "Kashmore", "Ghotki", "Jamshoro", "Tando Adam", "Hala",
+        # Punjab
+        "Faisalabad", "Multan", "Gujranwala", "Sialkot", "Sargodha", 
+        "Bahawalpur", "Gujrat", "Sheikhupura", "Jhang", "Sahiwal", "Okara", 
+        "Rahim Yar Khan", "Kasur", "Muzaffargarh", "Vehari", "Chakwal", 
+        "Attock", "Bhakkar", "Chiniot", "Hafizabad", "Jhelum", "Khanewal", 
+        "Khushab", "Layyah", "Lodhran", "Mianwali", "Nankana Sahib", "Narowal", 
+        "Pakpattan", "Rajanpur", "Toba Tek Singh", "Mandi Bahauddin", "Dera Ghazi Khan",
+        # Khyber Pakhtunkhwa (KPK) & Former FATA
+        "Mardan", "Mingora", "Swat", "Kohat", "Abbottabad", "Bannu", 
+        "Swabi", "Dera Ismail Khan", "Charsadda", "Nowshera", "Mansehra", 
+        "Karak", "Hangu", "Haripur", "Batagram", "Chitral", "Dir", "Kohistan", 
+        "Shangla", "Buner", "Tank", "Miranshah", "Wana", "Parachinar", 
+        "Khyber", "Bajaur", "Mohmand", "Orakzai", "Kurram", "South Waziristan", "North Waziristan",
+        # Balochistan
+        "Gwadar", "Khuzdar", "Chaman", "Turbat", "Sibi", "Zhob", 
+        "Ormara", "Pasni", "Taftan", "Loralai", "Naseerabad", "Jafarabad", 
+        "Dera Bugti", "Kohlu", "Awaran", "Panjgur", "Kharan", "Washuk", 
+        "Mastung", "Kalat", "Lasbela", "Pishin", "Killa Abdullah", "Ziarat",
+        # Gilgit-Baltistan & AJK
+        "Gilgit", "Skardu", "Muzaffarabad", "Mirpur", "Rawalakot", 
+        "Hunza", "Chilas", "Ghanche", "Kharmang", "Shigar", "Astore", 
+        "Diamer", "Ghizer", "Kotli", "Bagh", "Sudhanoti", "Bhimber", "Neelum"
+    ]
 
-     threat_keywords = ["attack", "blast", "terror", "security", "police", "rangers", "militant", "killed", "operation", "firing", "encounter", "bomb"]
+    threat_keywords = ["attack", "blast", "terror", "security", "police", "rangers", "militant", "killed", "operation", "firing", "encounter", "bomb"]
     
-    # Primary (Dawn) and Secondary (Express Tribune) verified feeds
     verified_feeds = [
         "https://www.dawn.com/feeds/pakistan/",
         "https://tribune.com.pk/feed/pakistan"
@@ -74,7 +67,6 @@ def fetch_real_time_intelligence():
             rss_res = requests.get(rss_url, timeout=5)
             root = ET.fromstring(rss_res.content)
             
-            # Scan top 20 alerts from each feed
             for item in root.findall('.//item')[:20]: 
                 pub_date_str = item.find('pubDate').text
                 try:
@@ -82,20 +74,17 @@ def fetch_real_time_intelligence():
                 except Exception:
                     item_date = now_utc
                 
-                # The 24-hour enforcer
                 if item_date < cutoff_time: continue
                     
                 title = item.find('title').text
                 
-                # Check against the threat matrix
                 if any(kw in title.lower() for kw in threat_keywords):
-                    area = "National" # Default
+                    area = "National"
                     
-                    # Cross-reference against your new massive location matrix
                     for city in pakistan_locations:
                         if city.lower() in title.lower().split(): 
                             area = city
-                            break # Stop searching once a city is found
+                            break
                     
                     live_feed.append({
                         "id": f"sec_{len(live_feed)}",
