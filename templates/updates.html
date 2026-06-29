@@ -68,6 +68,7 @@
     const geoSpinner = document.getElementById('geoSpinner');
     const geoStatusCard = document.getElementById('geoStatusCard');
     const updateFeed = document.getElementById('updateFeed');
+    const btnContainer = document.querySelector('.bg-gray-900.border');
 
     // --- 1. Share API Logic ---
     async function triggerShare(title, text) {
@@ -76,25 +77,18 @@
             text: `${text}\n\nVerified via National Emergency Portal:`,
             url: window.location.href
         };
-
         try {
-            // Checks if the browser supports native OS sharing (Mobile/Modern Desktop)
-            if (navigator.share) {
-                await navigator.share(shareData);
-            } else {
-                // Fallback for older browsers: Copy to clipboard
+            if (navigator.share) await navigator.share(shareData);
+            else {
                 await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text} ${shareData.url}`);
-                alert("Alert copied to clipboard! You can now paste it to share.");
+                alert("Alert copied to clipboard!");
             }
-        } catch (err) {
-            console.error("Error sharing:", err);
-        }
+        } catch (err) { console.error("Error sharing:", err); }
     }
 
     // --- 2. Filter UI Logic ---
     function applyFilter(targetArea) {
-        // Update button UI
-        filterBtns.forEach(b => {
+        document.querySelectorAll('.filter-btn').forEach(b => {
             b.classList.remove('bg-gray-700', 'text-white');
             b.classList.add('text-gray-400');
             if (b.getAttribute('data-filter') === targetArea) {
@@ -103,7 +97,6 @@
             }
         });
 
-        // Filter DOM Cards
         let foundMatch = false;
         updateCards.forEach(card => {
             const cardArea = card.getAttribute('data-area');
@@ -115,22 +108,16 @@
             }
         });
 
-        // Ensure National shows if specific city has no updates
         if (!foundMatch && targetArea !== 'All') {
              updateCards.forEach(card => {
-                 if (card.getAttribute('data-area') === 'National') {
-                     card.style.display = 'block';
-                 }
+                 if (card.getAttribute('data-area') === 'National') card.style.display = 'block';
              });
         }
-        
         updateFeed.classList.remove('opacity-50');
     }
 
-    // Manual Click Listeners for Buttons
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => applyFilter(btn.getAttribute('data-filter')));
-    });
+    // Bind initial buttons
+    filterBtns.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.getAttribute('data-filter'))));
 
     // --- 3. Geolocation-First Initialization Pipeline ---
     window.onload = () => {
@@ -148,29 +135,31 @@
             const lon = position.coords.longitude;
 
             try {
-                // Reverse geocode with email header to bypass Codespace blocks
                 const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&email=contact@traceback.systems`);
                 if (!response.ok) throw new Error("Network response was not ok");
                 
                 const data = await response.json();
                 const city = data.address.city || data.address.town || data.address.state || "Unknown";
                 
-                // Update UI to reflect successful lock
                 geoSpinner.classList.add('hidden');
                 geoStatusText.textContent = `Location verified: ${city}. Feed isolated.`;
                 geoStatusText.classList.replace('text-blue-400', 'text-green-400');
                 geoStatusCard.classList.replace('border-blue-500/50', 'border-green-500/50');
                 
-                // Attempt to auto-filter based on retrieved city string
-                let matchedArea = 'All';
-                if (city.includes("Karachi")) matchedArea = "Karachi";
-                else if (city.includes("Lahore")) matchedArea = "Lahore";
-                else if (city.includes("Islamabad")) matchedArea = "Islamabad";
+                // Dynamically inject a button for the user's city if it doesn't exist
+                let existingBtn = document.querySelector(`.filter-btn[data-filter="${city}"]`);
+                if (!existingBtn && city !== "Unknown") {
+                    const newBtn = document.createElement('button');
+                    newBtn.className = "filter-btn bg-gray-700 text-white px-3 py-1.5 rounded-md text-xs font-bold transition mx-0.5 whitespace-nowrap";
+                    newBtn.setAttribute('data-filter', city);
+                    newBtn.textContent = city;
+                    newBtn.addEventListener('click', () => applyFilter(city));
+                    btnContainer.appendChild(newBtn);
+                }
                 
-                applyFilter(matchedArea);
+                applyFilter(city);
 
             } catch (error) {
-                console.error("OSINT Resolve Error:", error);
                 geoSpinner.classList.add('hidden');
                 geoStatusText.textContent = "Secure API block detected. Defaulting to Global feed.";
                 geoStatusText.classList.replace('text-blue-400', 'text-red-400');
@@ -183,7 +172,7 @@
             geoStatusText.classList.replace('text-blue-400', 'text-yellow-400');
             geoStatusCard.classList.replace('border-blue-500/50', 'border-yellow-500/50');
             applyFilter('All');
-        }, { timeout: 10000 }); // 10 second timeout
+        }, { timeout: 10000 });
     };
-</script>
+                    </script>
 {% endblock %}
