@@ -238,14 +238,6 @@ def directory():
 def hospitals():
     return render_template('hospitals.html', title="Hospital Locator")
 
-@app.route('/api/hospitals', methods=['GET'])
-def get_hospitals():
-    """Secure, high-speed regional cache lookups to bypass sandbox limits."""
-    city = request.args.get('city', '').strip().lower()
-    if city in LOCAL_HOSPITALS:
-        return jsonify({"status": "success", "source": "local", "elements": LOCAL_HOSPITALS[city]})
-    return jsonify({"status": "not_found", "source": "local", "elements": []})
-
 @app.route('/updates')
 def updates():
     real_time_feed = fetch_real_time_intelligence()
