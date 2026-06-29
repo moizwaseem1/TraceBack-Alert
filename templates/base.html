@@ -3,7 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Core SEO & Dynamic Titles -->
     <title>TraceBack Alert | National Emergency Portal</title>
+    <meta name="description" content="TraceBack Alert is Pakistan's premier real-time National Emergency Portal. Get immediate access to nationwide emergency contacts, verified OSINT crisis updates, earthquake alerts, and a live hospital locator.">
+    
+    <!-- Exhaustive Keyword Matrix -->
+    <meta name="keywords" content="National Emergency Portal Pakistan, TraceBack Systems, alert.traceback.systems, emergency contacts Pakistan, hospital locator Karachi, hospital locator Lahore, Islamabad hospitals, live crisis updates Pakistan, OSINT security alerts, NDMA Pakistan, PDMA alerts, Rescue 1122, Edhi Ambulance, natural disaster tracker, earthquake alerts Pakistan, real-time threat intelligence, emergency routing, nationwide hospital availability, verified security news, bomb blast updates Pakistan, urban flooding alerts, active police operations, Pakistan crisis management hub">
+    
+    <!-- Search Engine Indexing Directives -->
+    <meta name="author" content="TraceBack Systems | Moiz Waseem">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <link rel="canonical" href="{{ request.url }}">
+    
+    <!-- Favicon Implementation -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+    
+    <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:title" content="TraceBack Alert | National Emergency Portal">
+    <meta property="og:description" content="Access nationwide emergency contacts, verified OSINT crisis updates, and a live hospital locator instantly.">
+    <meta property="og:site_name" content="TraceBack Systems">
+    <!-- Note: Add an og-image.jpg to your static folder for social previews -->
+    <meta property="og:image" content="{{ url_for('static', filename='og-image.jpg', _external=True) }}">
+    
+    <!-- Twitter Cards (X) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@TraceBackSys">
+    <meta name="twitter:title" content="TraceBack Alert | National Emergency Portal">
+    <meta name="twitter:description" content="Access nationwide emergency contacts, verified OSINT crisis updates, and a live hospital locator instantly.">
+    
+    <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 flex flex-col min-h-screen font-sans">
