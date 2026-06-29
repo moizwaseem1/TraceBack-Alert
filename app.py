@@ -25,39 +25,90 @@ def fetch_real_time_intelligence():
     cutoff_time = now_utc - timedelta(hours=24)
     
     # 1. OSINT Security & Terror Alerts
-    try:
-        rss_url = "https://www.dawn.com/feeds/pakistan/"
-        rss_res = requests.get(rss_url, timeout=5)
-        root = ET.fromstring(rss_res.content)
-        threat_keywords = ["attack", "blast", "terror", "security", "police", "rangers", "militant", "killed", "operation", "firing"]
-        
-        for item in root.findall('.//item')[:30]: 
-            pub_date_str = item.find('pubDate').text
-            try:
-                item_date = parsedate_to_datetime(pub_date_str).astimezone(timezone.utc).replace(tzinfo=None)
-            except Exception:
-                item_date = now_utc
+                pakistan_locations = [
+                    # Federal & Major Hubs
+                    "Islamabad", "Rawalpindi", "Karachi", "Lahore", "Peshawar", "Quetta",
+                    
+                    # Sindh
+                    "Hyderabad", "Sukkur", "Larkana", "Nawabshah", "Mirpurkhas", "Badin", 
+                    "Jacobabad", "Shikarpur", "Thatta", "Dadu", "Khairpur", "Umerkot", 
+                    "Mithi", "Kashmore", "Ghotki", "Jamshoro", "Tando Adam", "Hala",
+                    
+                    # Punjab
+                    "Faisalabad", "Multan", "Gujranwala", "Sialkot", "Sargodha", 
+                    "Bahawalpur", "Gujrat", "Sheikhupura", "Jhang", "Sahiwal", "Okara", 
+                    "Rahim Yar Khan", "Kasur", "Muzaffargarh", "Vehari", "Chakwal", 
+                    "Attock", "Bhakkar", "Chiniot", "Hafizabad", "Jhelum", "Khanewal", 
+                    "Khushab", "Layyah", "Lodhran", "Mianwali", "Nankana Sahib", "Narowal", 
+                    "Pakpattan", "Rajanpur", "Toba Tek Singh", "Mandi Bahauddin", "Dera Ghazi Khan",
+                    
+                    # Khyber Pakhtunkhwa (KPK) & Former FATA
+                    "Mardan", "Mingora", "Swat", "Kohat", "Abbottabad", "Bannu", 
+                    "Swabi", "Dera Ismail Khan", "Charsadda", "Nowshera", "Mansehra", 
+                    "Karak", "Hangu", "Haripur", "Batagram", "Chitral", "Dir", "Kohistan", 
+                    "Shangla", "Buner", "Tank", "Miranshah", "Wana", "Parachinar", 
+                    "Khyber", "Bajaur", "Mohmand", "Orakzai", "Kurram", "South Waziristan", "North Waziristan",
+                    
+                    # Balochistan
+                    "Gwadar", "Khuzdar", "Chaman", "Turbat", "Sibi", "Zhob", 
+                    "Ormara", "Pasni", "Taftan", "Loralai", "Naseerabad", "Jafarabad", 
+                    "Dera Bugti", "Kohlu", "Awaran", "Panjgur", "Kharan", "Washuk", 
+                    "Mastung", "Kalat", "Lasbela", "Pishin", "Killa Abdullah", "Ziarat",
+                    
+                    # Gilgit-Baltistan & AJK
+                    "Gilgit", "Skardu", "Muzaffarabad", "Mirpur", "Rawalakot", 
+                    "Hunza", "Chilas", "Ghanche", "Kharmang", "Shigar", "Astore", 
+                    "Diamer", "Ghizer", "Kotli", "Bagh", "Sudhanoti", "Bhimber", "Neelum"
+                ]
+
+     threat_keywords = ["attack", "blast", "terror", "security", "police", "rangers", "militant", "killed", "operation", "firing", "encounter", "bomb"]
+    
+    # Primary (Dawn) and Secondary (Express Tribune) verified feeds
+    verified_feeds = [
+        "https://www.dawn.com/feeds/pakistan/",
+        "https://tribune.com.pk/feed/pakistan"
+    ]
+
+    for rss_url in verified_feeds:
+        try:
+            rss_res = requests.get(rss_url, timeout=5)
+            root = ET.fromstring(rss_res.content)
             
-            if item_date < cutoff_time: continue
+            # Scan top 20 alerts from each feed
+            for item in root.findall('.//item')[:20]: 
+                pub_date_str = item.find('pubDate').text
+                try:
+                    item_date = parsedate_to_datetime(pub_date_str).astimezone(timezone.utc).replace(tzinfo=None)
+                except Exception:
+                    item_date = now_utc
                 
-            title = item.find('title').text
-            if any(kw in title.lower() for kw in threat_keywords):
-                area = "National"
-                for city in ["Karachi", "Lahore", "Islamabad", "Quetta", "Peshawar"]:
-                    if city.lower() in title.lower(): area = city
+                # The 24-hour enforcer
+                if item_date < cutoff_time: continue
+                    
+                title = item.find('title').text
                 
-                live_feed.append({
-                    "id": f"sec_{len(live_feed)}",
-                    "time": item_date.strftime('%I:%M %p'),
-                    "area": area,
-                    "alert": f"SECURITY INTELLIGENCE: {title}",
-                    "verified": True,
-                    "level": "Critical",
-                    "color": "red",
-                    "raw_timestamp": item_date.timestamp()
-                })
-    except Exception as e:
-        print(f"OSINT RSS Error: {e}")
+                # Check against the threat matrix
+                if any(kw in title.lower() for kw in threat_keywords):
+                    area = "National" # Default
+                    
+                    # Cross-reference against your new massive location matrix
+                    for city in pakistan_locations:
+                        if city.lower() in title.lower().split(): 
+                            area = city
+                            break # Stop searching once a city is found
+                    
+                    live_feed.append({
+                        "id": f"sec_{len(live_feed)}",
+                        "time": item_date.strftime('%I:%M %p'),
+                        "area": area,
+                        "alert": f"SECURITY INTELLIGENCE: {title}",
+                        "verified": True,
+                        "level": "Critical",
+                        "color": "red",
+                        "raw_timestamp": item_date.timestamp()
+                    })
+        except Exception as e:
+            print(f"OSINT RSS Error on {rss_url}: {e}")
 
     # 2. USGS Seismic Network
     try:
