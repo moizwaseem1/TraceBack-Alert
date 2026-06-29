@@ -15,7 +15,7 @@
         </div>
         
         <div class="bg-gray-900 border border-gray-700 p-1 rounded-lg inline-flex overflow-x-auto max-w-full">
-            <button class="filter-btn active bg-gray-700 text-white px-3 py-1.5 rounded-md text-xs font-bold transition mx-0.5 whitespace-nowrap" data-filter="All">Global</button>
+            <button class="filter-btn active bg-gray-700 text-white px-3 py-1.5 rounded-md text-xs font-bold transition mx-0.5 whitespace-nowrap" data-filter="All">All</button>
             <button class="filter-btn hover:bg-gray-700 text-gray-400 hover:text-white px-3 py-1.5 rounded-md text-xs font-bold transition mx-0.5 whitespace-nowrap" data-filter="National">National</button>
             <button class="filter-btn hover:bg-gray-700 text-gray-400 hover:text-white px-3 py-1.5 rounded-md text-xs font-bold transition mx-0.5 whitespace-nowrap" data-filter="Karachi">Karachi</button>
             <button class="filter-btn hover:bg-gray-700 text-gray-400 hover:text-white px-3 py-1.5 rounded-md text-xs font-bold transition mx-0.5 whitespace-nowrap" data-filter="Lahore">Lahore</button>
@@ -179,7 +179,7 @@
             }
         }, (error) => {
             geoSpinner.classList.add('hidden');
-            geoStatusText.textContent = "Location permission denied. Displaying Global feed.";
+            geoStatusText.textContent = "Location permission denied. Displaying All feed.";
             geoStatusText.classList.replace('text-blue-400', 'text-yellow-400');
             geoStatusCard.classList.replace('border-blue-500/50', 'border-yellow-500/50');
             applyFilter('All');
