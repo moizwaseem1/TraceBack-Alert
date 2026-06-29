@@ -60,7 +60,6 @@
         
     </div>
 </div>
-
 <script>
     const filterBtns = document.querySelectorAll('.filter-btn');
     const updateCards = document.querySelectorAll('.update-card');
@@ -139,7 +138,10 @@
                 if (!response.ok) throw new Error("Network response was not ok");
                 
                 const data = await response.json();
-                const city = data.address.city || data.address.town || data.address.state || "Unknown";
+                const rawCity = data.address.city || data.address.town || data.address.state || "Unknown";
+                
+                // OSINT NORMALIZER: Strip administrative map jargon to match our exact backend tags
+                const city = rawCity.replace(/\s+(Division|District|City|Cantonment|Tehsil|Town)$/i, "").trim();
                 
                 geoSpinner.classList.add('hidden');
                 geoStatusText.textContent = `Location verified: ${city}. Feed isolated.`;
@@ -174,5 +176,5 @@
             applyFilter('All');
         }, { timeout: 10000 });
     };
-                    </script>
+</script>
 {% endblock %}
