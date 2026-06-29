@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    
+    <div class="text-center mb-12">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Legal & <span class="text-gray-500">Privacy</span></h1>
+        <p class="text-gray-400">Operational compliance, data policies, and platform disclaimers.</p>
+    </div>
+
+    <div class="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-8 rounded-2xl shadow-lg prose prose-invert max-w-none prose-headings:text-gray-100 prose-a:text-red-400">
+        
+        <h2 class="text-2xl font-bold border-b border-gray-700 pb-2 mb-4">1. Zero-Storage Privacy Policy</h2>
+        <p class="text-gray-300 leading-relaxed mb-6">
+            TraceBack Systems operates on a strict zero-storage architecture. When utilizing the National Emergency Portal's geolocation features, your coordinates are processed strictly client-side or transmitted securely to verified open-source mapping nodes (Nominatim/OpenStreetMap). <strong>Your exact GPS coordinates are never stored, logged, or cached on our backend servers.</strong>
+        </p>
+
+        <h2 class="text-2xl font-bold border-b border-gray-700 pb-2 mb-4 mt-8">2. Source Verification & Liability</h2>
+        <p class="text-gray-300 leading-relaxed mb-6">
+            The live situational awareness feed aggregates data from global networks including the UN ReliefWeb, the US Geological Survey (USGS), and national news syndicates. While TraceBack Systems employs automated threat intelligence parsing to ensure chronological accuracy, we are not the primary authors of these alerts. 
+        </p>
+        <p class="text-gray-300 leading-relaxed mb-6">
+            In life-threatening situations, always defer to immediate instructions from local authorities (Police, NDMA, PDMA) and physical emergency responders. We are not liable for network delays or inaccuracies in third-party data streams.
+        </p>
+
+        <h2 class="text-2xl font-bold border-b border-gray-700 pb-2 mb-4 mt-8">3. Usage Terms</h2>
+        <p class="text-gray-300 leading-relaxed mb-6">
+            This platform is an open-access public utility designed for crisis coordination and situational awareness. Any attempt to scrape, DDoS, or maliciously overload our backend intelligence aggregators will result in an immediate network-level ban.
+        </p>
+
+        <div class="mt-10 pt-6 border-t border-gray-700 text-sm text-gray-500">
+            <p>Last Updated: June 2026</p>
+            <p>For official inquiries or data compliance questions, contact: <a href="mailto:tracebackintelligence@gmail.com" class="hover:text-red-300 transition">tracebackintelligence@gmail.com</a></p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

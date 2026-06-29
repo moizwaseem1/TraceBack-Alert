@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TraceBack Alert | National Emergency Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 flex flex-col min-h-screen font-sans">
+
+    <nav class="sticky top-0 z-50 bg-gray-900/90 backdrop-blur-md border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <div class="flex items-center">
+                    <a href="{{ url_for('home') }}" class="font-bold text-xl tracking-wider text-red-500">
+                        ALERT<span class="text-white">.TRACEBACK</span>
+                    </a>
+                </div>
+                
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="{{ url_for('home') }}" class="hover:text-red-400 px-3 py-2 rounded-md text-sm font-medium transition">Home</a>
+                        <a href="{{ url_for('directory') }}" class="hover:text-red-400 px-3 py-2 rounded-md text-sm font-medium transition">Directory</a>
+                        <a href="{{ url_for('hospitals') }}" class="hover:text-red-400 px-3 py-2 rounded-md text-sm font-medium transition">Hospitals</a>
+                        <a href="{{ url_for('updates') }}" class="hover:text-red-400 px-3 py-2 rounded-md text-sm font-medium transition">Live Updates</a>
+                        <a href="{{ url_for('legal') }}" class="hover:text-red-400 px-3 py-2 rounded-md text-sm font-medium transition">Legal</a>
+                        <a href="https://traceback.systems" target="_blank" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-bold transition ml-4">Main Site</a>
+                    </div>
+                </div>
+
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" id="mobile-menu-btn" class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none transition">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="hidden md:hidden bg-gray-800 border-b border-gray-700" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 shadow-xl">
+                <a href="{{ url_for('home') }}" class="hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="{{ url_for('directory') }}" class="hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Directory</a>
+                <a href="{{ url_for('hospitals') }}" class="hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Hospitals</a>
+                <a href="{{ url_for('updates') }}" class="hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Live Updates</a>
+                <a href="{{ url_for('legal') }}" class="hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Legal</a>
+                <a href="https://traceback.systems" target="_blank" class="bg-red-600 hover:bg-red-700 text-white block px-3 py-2 rounded-md text-base font-bold mt-4 text-center">Main Site</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-950 border-t border-gray-800 pt-10 pb-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                
+                <div>
+                    <span class="font-bold text-xl tracking-wider text-white">TRACEBACK<span class="text-red-500"> SYSTEMS</span></span>
+                    <p class="mt-2 text-sm text-gray-400">A secure, resilient, and verified platform for nationwide emergency coordination and real-time crisis response.</p>
+                </div>
+
+                <div class="flex flex-col space-y-2">
+                    <h3 class="text-sm font-semibold tracking-wider text-gray-300 uppercase">Portal Links</h3>
+                    <a href="{{ url_for('home') }}" class="text-sm text-gray-400 hover:text-white transition">Home Hub</a>
+                    <a href="{{ url_for('directory') }}" class="text-sm text-gray-400 hover:text-white transition">Emergency Directory</a>
+                    <a href="{{ url_for('hospitals') }}" class="text-sm text-gray-400 hover:text-white transition">Hospital Locator</a>
+                    <a href="{{ url_for('updates') }}" class="text-sm text-gray-400 hover:text-white transition">Live Updates</a>
+                    <a href="{{ url_for('legal') }}" class="text-sm text-gray-400 hover:text-white transition">Legal & Privacy</a>
+                </div>
+
+                <div class="flex flex-col space-y-2">
+                    <h3 class="text-sm font-semibold tracking-wider text-gray-300 uppercase">Connect</h3>
+                    <a href="mailto:contact@traceback.systems" class="text-sm text-gray-400 hover:text-white transition">contact@traceback.systems</a>
+                    <a href="https://linkedin.com/in/moiz-waseem" target="_blank" class="text-sm text-gray-400 hover:text-white transition">Moiz Waseem - Web Developer</a>
+                    <a href="https://traceback.systems" target="_blank" class="text-sm text-red-400 hover:text-red-300 font-medium transition mt-2">← Back to TraceBack Systems</a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-6 text-center">
+                <p class="text-xs text-gray-500">&copy; 2026 TraceBack Systems. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

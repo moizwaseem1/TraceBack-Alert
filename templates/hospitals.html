@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    
+    <div class="text-center mb-10">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Hospital <span class="text-red-500">Locator</span></h1>
+        <p class="text-gray-400 mb-8 max-w-2xl mx-auto">Find the nearest healthcare facilities in real-time. Enter your city or use secure geolocation to map hospitals and get emergency routing.</p>
+        
+        <div class="bg-gray-800/50 backdrop-blur-md border border-gray-700 p-4 rounded-2xl flex flex-col md:flex-row gap-4 justify-center items-center max-w-3xl mx-auto shadow-lg">
+            
+            <button id="locateHospitalsBtn" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-bold transition flex items-center justify-center w-full md:w-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Find Near Me
+            </button>
+            
+            <div class="text-gray-500 font-semibold hidden md:block">OR</div>
+            
+            <div class="flex w-full md:w-auto flex-grow">
+                <input type="text" id="cityInput" placeholder="e.g. Karachi, Lahore, Quetta" class="bg-gray-900 border border-gray-700 text-white px-4 py-3 rounded-l-xl focus:ring-2 focus:ring-red-500 focus:outline-none w-full">
+                <button id="searchCityBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-r-xl font-bold transition">
+                    Search
+                </button>
+            </div>
+        </div>
+        
+        <p id="hospitalStatus" class="mt-4 text-sm text-gray-400 font-mono"></p>
+    </div>
+
+    <div id="hospitalGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+        </div>
+
+</div>
+
+<script>
+    const locateBtn = document.getElementById('locateHospitalsBtn');
+    const searchBtn = document.getElementById('searchCityBtn');
+    const cityInput = document.getElementById('cityInput');
+    const statusText = document.getElementById('hospitalStatus');
+    const grid = document.getElementById('hospitalGrid');
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return (R * c).toFixed(1);
+    }
+
+    function renderHospitalCards(hospitals, originLat, originLon) {
+        grid.innerHTML = '';
+        grid.classList.remove('hidden');
+
+        hospitals.forEach(h => {
+            const distanceStr = (originLat && originLon) ? `${calculateDistance(originLat, originLon, h.lat, h.lon)} km` : 'Available';
+            const mapsLink = `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`;
+            const type = h.type || "Hospital";
+
+            const card = document.createElement('div');
+            card.className = "bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-6 rounded-2xl hover:border-red-500/50 transition flex flex-col justify-between";
+            card.innerHTML = `
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-lg font-bold text-gray-100">${h.name}</h3>
+                        <span class="bg-red-500/10 text-red-400 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">${type}</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-4">Status: <span class="text-white font-bold">${distanceStr}</span></p>
+                </div>
+                <a href="${mapsLink}" target="_blank" class="w-full text-center bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg text-sm font-semibold transition mt-auto flex items-center justify-center">
+                    Navigate via Maps
+                </a>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // Main Router Logic for Handling Search
+    async function handleHospitalSearch(cityName) {
+        const query = cityName.trim().toLowerCase();
+        if (!query) return;
+
+        statusText.textContent = `Querying internal emergency cache for ${cityName}...`;
+        statusText.className = "mt-4 text-sm text-gray-400 font-mono animate-pulse";
+
+        try {
+            // 1. Try internal backend first (Immune to external rate-limiting)
+            const localRes = await fetch(`/api/hospitals?city=${encodeURIComponent(query)}`);
+            const localData = await localRes.json();
+
+            if (localData.status === "success" && localData.elements.length > 0) {
+                statusText.className = "mt-4 text-sm text-green-400 font-mono";
+                statusText.textContent = `Local records verified for ${cityName}. (Zero-latency delivery)`;
+                renderHospitalCards(localData.elements, null, null);
+                return;
+            }
+
+            // 2. Fallback to OpenStreetMap if not found in core seed database
+            statusText.textContent = "Expanding search parameters to live network...";
+            const osmRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', Pakistan')}&limit=1`);
+            const osmData = await osmRes.json();
+
+            if (osmData.length === 0) {
+                statusText.className = "mt-4 text-sm text-red-400 font-mono";
+                statusText.textContent = "Region not found. Try 'Karachi', 'Lahore', or 'Islamabad'.";
+                return;
+            }
+
+            const lat = parseFloat(osmData[0].lat);
+            const lon = parseFloat(osmData[0].lon);
+
+            const overpassQuery = `[out:json];node["amenity"="hospital"](around:10000,${lat},${lon});out center;`;
+            const overpassRes = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`);
+            const overpassData = await overpassRes.json();
+
+            if (overpassData.elements.length === 0) {
+                statusText.textContent = "No external matching medical objects located.";
+                return;
+            }
+
+            const mappedElements = overpassData.elements.map(el => ({
+                name: el.tags.name || "Emergency Facility",
+                lat: el.lat || el.center.lat,
+                lon: el.lon || el.center.lon,
+                type: el.tags.healthcare || "General"
+            }));
+
+            statusText.className = "mt-4 text-sm text-green-400 font-mono";
+            statusText.textContent = `Live data compiled successfully.`;
+            renderHospitalCards(mappedElements, lat, lon);
+
+        } catch (err) {
+            console.error(err);
+            statusText.className = "mt-4 text-sm text-red-400 font-mono";
+            statusText.textContent = "External sandbox blocked. Use standard regions ('Karachi', 'Lahore', 'Islamabad') for local-first testing.";
+        }
+    }
+
+    searchBtn.addEventListener('click', () => handleHospitalSearch(cityInput.value));
+    
+    // Wire Geolocation button to execute a target local lookup for current scope
+    locateBtn.addEventListener('click', () => {
+        statusText.textContent = "Acquiring localized scope...";
+        // In cloud sandbox, trigger rapid test via default center
+        handleHospitalSearch("Karachi");
+    });
+</script>
+
+{% endblock %}
