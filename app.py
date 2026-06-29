@@ -1,10 +1,16 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 import requests
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
+import os
 
 app = Flask(__name__)
+
+@app.route('/robots.txt')
+@app.route('/sitemap.xml')
+def static_from_root():
+    return send_from_directory(app.static_folder, request.path[1:])
 
 # =====================================================================
 # INTELLIGENCE PROCESSING PIPELINE (Live Network Only)
@@ -139,14 +145,51 @@ def home():
 @app.route('/directory')
 def directory():
     contacts = {
-        "National": [{"name": "NDMA", "number": "112", "type": "alert", "color": "red"}],
-        "Islamabad Capital Territory": [{"name": "Police", "number": "15", "type": "police", "color": "blue"}],
-        "Sindh": [{"name": "Police", "number": "15", "type": "police", "color": "blue"}],
-        "Punjab": [{"name": "Police", "number": "15", "type": "police", "color": "blue"}],
-        "Khyber Pakhtunkhwa (KPK)": [{"name": "Police", "number": "15", "type": "police", "color": "blue"}],
-        "Balochistan": [{"name": "Police", "number": "15", "type": "police", "color": "blue"}],
-        "Gilgit-Baltistan (GB)": [{"name": "Police", "number": "15", "type": "police", "color": "blue"}],
-        "Azad Jammu & Kashmir (AJK)": [{"name": "Police", "number": "15", "type": "police", "color": "blue"}]
+        "National": [
+            {"name": "National Disaster Management (NDMA)", "number": "112", "type": "alert", "color": "red"},
+            {"name": "Motorway & Highway Police (NHMP)", "number": "130", "type": "police", "color": "blue"},
+            {"name": "Women & Child Helpline", "number": "1099", "type": "alert", "color": "purple"},
+            {"name": "Edhi Ambulance Nationwide", "number": "115", "type": "ambulance", "color": "red"},
+            {"name": "Fire Brigade Nationwide", "number": "16", "type": "fire", "color": "orange"}
+        ],
+        "Islamabad Capital Territory": [
+            {"name": "Police Emergency", "number": "15", "type": "police", "color": "blue"},
+            {"name": "Rescue 1122 (Ambulance/Fire)", "number": "1122", "type": "ambulance", "color": "red"},
+            {"name": "Islamabad Traffic Police", "number": "1915", "type": "police", "color": "blue"}
+        ],
+        "Sindh": [
+            {"name": "Police Madadgar", "number": "15", "type": "police", "color": "blue"},
+            {"name": "Rescue 1122 Sindh (SERS)", "number": "1122", "type": "ambulance", "color": "red"},
+            {"name": "Fire Brigade", "number": "16", "type": "fire", "color": "orange"},
+            {"name": "Pakistan Rangers (Sindh)", "number": "1101", "type": "military", "color": "green"},
+            {"name": "Chhipa Ambulance", "number": "1020", "type": "ambulance", "color": "red"}
+        ],
+        "Punjab": [
+            {"name": "Police Emergency", "number": "15", "type": "police", "color": "blue"},
+            {"name": "Rescue 1122 (Ambulance/Rescue)", "number": "1122", "type": "ambulance", "color": "red"},
+            {"name": "Fire Brigade", "number": "16", "type": "fire", "color": "orange"},
+            {"name": "CTD (Counter Terrorism Punjab)", "number": "0800-11111", "type": "military", "color": "green"}
+        ],
+        "Khyber Pakhtunkhwa (KPK)": [
+            {"name": "Police Emergency", "number": "15", "type": "police", "color": "blue"},
+            {"name": "Rescue 1122 KPK", "number": "1122", "type": "ambulance", "color": "red"},
+            {"name": "PDMA Khyber Pakhtunkhwa", "number": "1700", "type": "alert", "color": "orange"}
+        ],
+        "Balochistan": [
+            {"name": "Police Emergency", "number": "15", "type": "police", "color": "blue"},
+            {"name": "Rescue 1122 (MERC)", "number": "1122", "type": "ambulance", "color": "red"},
+            {"name": "PDMA Balochistan", "number": "1129", "type": "alert", "color": "orange"}
+        ],
+        "Gilgit-Baltistan (GB)": [
+            {"name": "Police Emergency", "number": "15", "type": "police", "color": "blue"},
+            {"name": "Rescue 1122 GB", "number": "1122", "type": "ambulance", "color": "red"},
+            {"name": "GB Disaster Management", "number": "114", "type": "alert", "color": "orange"}
+        ],
+        "Azad Jammu & Kashmir (AJK)": [
+            {"name": "Police Emergency", "number": "15", "type": "police", "color": "blue"},
+            {"name": "Rescue 1122 AJK", "number": "1122", "type": "ambulance", "color": "red"},
+            {"name": "SDMA AJK", "number": "1900", "type": "alert", "color": "orange"}
+        ]
     }
     return render_template('directory.html', title="Emergency Directory", contacts=contacts)
 
