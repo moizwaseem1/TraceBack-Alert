@@ -1,1 +1,1 @@
-# TraceBack-Alert
+A centralized, privacy-first crisis management and emergency routing portal for Pakistan, delivering province-specific hotlines, real-time hospital mapping, and verified security alerts during high-stress incidents.
